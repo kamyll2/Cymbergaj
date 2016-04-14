@@ -172,16 +172,27 @@ public class FingerTrackingView extends View implements ICollisionInterpreter {
     }
 
     private boolean vectorHandle(ICollisionInvoker invoker, float x, float y){
-        if(x<BallEngine.BALL_RADIUS || x + BallEngine.BALL_RADIUS > getWidth()){
+        if(x<BallEngine.BALL_RADIUS){
             Vector2 currentVector = invoker.getCurrentVector();
-            invoker.updateVector(new Vector2(-currentVector.x, currentVector.y));
+            invoker.updateVector(new Vector2(Math.abs(currentVector.x), currentVector.y));
             return true;
         }
-        if (y < BallEngine.BALL_RADIUS || y + BallEngine.BALL_RADIUS > getHeight()) {
+        if(x + BallEngine.BALL_RADIUS > getWidth()){
             Vector2 currentVector = invoker.getCurrentVector();
-            invoker.updateVector(new Vector2(currentVector.x, -currentVector.y));
+            invoker.updateVector(new Vector2(-Math.abs(currentVector.x), currentVector.y));
             return true;
         }
+        if (y < BallEngine.BALL_RADIUS) {
+            Vector2 currentVector = invoker.getCurrentVector();
+            invoker.updateVector(new Vector2(currentVector.x, Math.abs(currentVector.y)));
+            return true;
+        }
+        if (y + BallEngine.BALL_RADIUS > getHeight()) {
+            Vector2 currentVector = invoker.getCurrentVector();
+            invoker.updateVector(new Vector2(currentVector.x, -Math.abs(currentVector.y)));
+            return true;
+        }
+
         return false;
     }
 }
