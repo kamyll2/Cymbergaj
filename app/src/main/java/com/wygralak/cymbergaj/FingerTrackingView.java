@@ -61,7 +61,6 @@ public class FingerTrackingView extends View implements ICollisionInterpreter {
                 } else if (pointerCount == 1) {
                     singleMove(event.getX(), event.getY());
                 }
-                //invalidate();
                 break;
             case MotionEvent.ACTION_POINTER_DOWN:
                 if (pointerCount == 2) {
@@ -69,7 +68,6 @@ public class FingerTrackingView extends View implements ICollisionInterpreter {
                 } else if (pointerCount == 1) {
                     singleMove(event.getX(), event.getY());
                 }
-                //invalidate();
                 break;
             case MotionEvent.ACTION_POINTER_UP:
                 if (pointerCount == 2) {
@@ -77,7 +75,6 @@ public class FingerTrackingView extends View implements ICollisionInterpreter {
                 } else if (pointerCount == 1) {
                     singleMove(event.getX(), event.getY());
                 }
-                //invalidate();
                 break;
             case MotionEvent.ACTION_MOVE:
                 if (pointerCount == 2) {
@@ -85,7 +82,6 @@ public class FingerTrackingView extends View implements ICollisionInterpreter {
                 } else if (pointerCount == 1) {
                     singleMove(event.getX(), event.getY());
                 }
-                //invalidate();
                 break;
             case MotionEvent.ACTION_UP:
                 if (pointerCount == 2) {
@@ -93,7 +89,6 @@ public class FingerTrackingView extends View implements ICollisionInterpreter {
                 } else if (pointerCount == 1) {
                     singleMove(event.getX(), event.getY());
                 }
-                //invalidate();
                 break;
         }
         return true;
@@ -138,7 +133,6 @@ public class FingerTrackingView extends View implements ICollisionInterpreter {
         if (ballEngine != null) {
             canvas.drawCircle(ballEngine.getCurrentX(), ballEngine.getCurrentY(), BallEngine.BALL_RADIUS, BallEngine.BALL_PAINT);
         }
-        //((MainActivity)getContext()).setStatusText("Canvas: "+ canvas.isHardwareAccelerated() + " View: " + this.isHardwareAccelerated());
     }
 
     public void setBallEngine(BallEngine ballEngine) {
@@ -155,44 +149,23 @@ public class FingerTrackingView extends View implements ICollisionInterpreter {
     }
 
     @Override
-    public boolean checkForCollisionAndHandle(ICollisionInvoker invoker, float x, float y) {
-        return vectorHandle(invoker, x, y);
-        /*if (x - BallEngine.BALL_RADIUS < 0 || x + BallEngine.BALL_RADIUS > getWidth()) {
-            //float newAngle = invoker.getCurrentAngle() == 90f ? 180f : 90f;
-            float newAngle = 180f - (180f + invoker.getCurrentAngle());
-            invoker.updateAngle(newAngle);
-            return true;
-        }
-        if (y - BallEngine.BALL_RADIUS < 0 || y + BallEngine.BALL_RADIUS > getHeight()) {
-            float newAngle = 270f - (90f + invoker.getCurrentAngle());
-            invoker.updateAngle(newAngle);
-            return true;
-        }
-        return false;*/
-    }
-
-    private boolean vectorHandle(ICollisionInvoker invoker, float x, float y){
+    public boolean checkForCollisionAndHandle(ICollisionInvoker invoker, Vector2 currentVector, float x, float y) {
         if(x<BallEngine.BALL_RADIUS){
-            Vector2 currentVector = invoker.getCurrentVector();
             invoker.updateVector(new Vector2(Math.abs(currentVector.x), currentVector.y));
             return true;
         }
         if(x + BallEngine.BALL_RADIUS > getWidth()){
-            Vector2 currentVector = invoker.getCurrentVector();
             invoker.updateVector(new Vector2(-Math.abs(currentVector.x), currentVector.y));
             return true;
         }
         if (y < BallEngine.BALL_RADIUS) {
-            Vector2 currentVector = invoker.getCurrentVector();
             invoker.updateVector(new Vector2(currentVector.x, Math.abs(currentVector.y)));
             return true;
         }
         if (y + BallEngine.BALL_RADIUS > getHeight()) {
-            Vector2 currentVector = invoker.getCurrentVector();
             invoker.updateVector(new Vector2(currentVector.x, -Math.abs(currentVector.y)));
             return true;
         }
-
         return false;
     }
 }

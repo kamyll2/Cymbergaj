@@ -20,8 +20,7 @@ public class MainActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         textView = (TextView) findViewById(R.id.statusText);
-        //ballEngine = new BallEngine(this);
-        ballEngine = new VectorBallEngine(this);
+        ballEngine = new BallEngine(this);
         player1Engine = new PlayerEngine();
         player2Engine = new PlayerEngine();
         pitch = (FingerTrackingView) findViewById(R.id.pitch);

@@ -26,12 +26,15 @@ public class BallEngine implements ICollisionInvoker {
 
     protected MainActivity mainActivity;
 
-    private float angle = 15f;
+    private Vector2 currentVector;
+
 
     public BallEngine(MainActivity mainActivity) {
+        //TODO delete mainActivity from fields
         this.mainActivity = mainActivity;
         BALL_PAINT.setColor(Color.WHITE);
         collisionables = new ArrayList<>();
+        currentVector = new Vector2(0.1f, 0.1f).normalize();
     }
 
     public void setupDefaultPosition(float pitchWidth, float pitchHeight) {
@@ -49,17 +52,6 @@ public class BallEngine implements ICollisionInvoker {
         return currentY;
     }
 
-    public void updatePosition() {
-        currentX = currentX + (float) Math.sin(Math.toRadians(angle)) * speed;
-        currentY = currentY + (float) Math.cos(Math.toRadians(angle)) * speed;
-
-        for (int i = 0; i < collisionables.size(); i++) {
-            if (collisionables.get(i).checkForCollisionAndHandle(this, currentX, currentY)) {
-                break;
-            }
-        }
-    }
-
     public void addColissionable(ICollisionInterpreter collisionInterpreter) {
         collisionables.add(collisionInterpreter);
     }
@@ -68,27 +60,25 @@ public class BallEngine implements ICollisionInvoker {
         collisionables.remove(collisionInterpreter);
     }
 
-    @Override
-    public void updateAngle(float angle) {
-        int mul = angle > 360 ? -1 :
-                (angle < 0 ? 1 : 0);
-        this.angle = angle + mul * 360;
-        mainActivity.setStatusText(String.valueOf(this.angle));
-        //this.angle*=-1;
-    }
+    public void updatePosition() {
+        currentX = currentX + speed * currentVector.x;
+        currentY = currentY + speed * currentVector.y;
 
-    @Override
-    public float getCurrentAngle() {
-        return angle;
+        for (int i = 0; i < collisionables.size(); i++) {
+            if (collisionables.get(i).checkForCollisionAndHandle(this, currentVector, currentX, currentY)) {
+                break;
+            }
+        }
     }
 
     @Override
     public void updateVector(Vector2 angle) {
-
+        currentVector = angle;
+        mainActivity.setStatusText(currentVector.toString());
     }
 
     @Override
     public Vector2 getCurrentVector() {
-        return null;
+        return currentVector;
     }
 }
