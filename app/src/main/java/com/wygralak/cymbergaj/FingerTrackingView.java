@@ -8,6 +8,9 @@ import android.view.View;
 
 import com.wygralak.cymbergaj.ColissionUtils.ICollisionInterpreter;
 import com.wygralak.cymbergaj.ColissionUtils.ICollisionInvoker;
+import com.wygralak.cymbergaj.PitchWalls.BasePitchWall;
+
+import java.util.List;
 
 /**
  * Created by Kamil on 2016-03-09.
@@ -18,6 +21,7 @@ public class FingerTrackingView extends View implements ICollisionInterpreter {
     private BallEngine ballEngine;
     private PlayerEngine player1Engine;
     private PlayerEngine player2Engine;
+    private List<BasePitchWall> pitchWalls;
 
     public FingerTrackingView(Context context) {
         super(context);
@@ -46,7 +50,9 @@ public class FingerTrackingView extends View implements ICollisionInterpreter {
         if (ballEngine != null) {
             ballEngine.setupDefaultPosition(getWidth(), getHeight());
         }
-
+        if (pitchWalls != null) {
+            updatePitchWallSizes(getWidth(), getHeight());
+        }
     }
 
     @Override
@@ -133,6 +139,13 @@ public class FingerTrackingView extends View implements ICollisionInterpreter {
         if (ballEngine != null) {
             canvas.drawCircle(ballEngine.getCurrentX(), ballEngine.getCurrentY(), BallEngine.BALL_RADIUS, BallEngine.BALL_PAINT);
         }
+        drawPitchWalls(canvas);
+    }
+
+    private void drawPitchWalls(Canvas canvas) {
+        for (int i = 0; i < pitchWalls.size(); i++) {
+            canvas.drawRect(pitchWalls.get(i), pitchWalls.get(i).getCurrentPaint());
+        }
     }
 
     public void setBallEngine(BallEngine ballEngine) {
@@ -150,22 +163,17 @@ public class FingerTrackingView extends View implements ICollisionInterpreter {
 
     @Override
     public boolean checkForCollisionAndHandle(ICollisionInvoker invoker, Vector2 currentVector, float x, float y) {
-        if(x<BallEngine.BALL_RADIUS){
-            invoker.updateVector(new Vector2(Math.abs(currentVector.x), currentVector.y));
-            return true;
-        }
-        if(x + BallEngine.BALL_RADIUS > getWidth()){
-            invoker.updateVector(new Vector2(-Math.abs(currentVector.x), currentVector.y));
-            return true;
-        }
-        if (y < BallEngine.BALL_RADIUS) {
-            invoker.updateVector(new Vector2(currentVector.x, Math.abs(currentVector.y)));
-            return true;
-        }
-        if (y + BallEngine.BALL_RADIUS > getHeight()) {
-            invoker.updateVector(new Vector2(currentVector.x, -Math.abs(currentVector.y)));
-            return true;
-        }
         return false;
+    }
+
+    public void setPitchWalls(List<BasePitchWall> pitchWalls) {
+        this.pitchWalls = pitchWalls;
+        updatePitchWallSizes(getWidth(), getHeight());
+    }
+
+    private void updatePitchWallSizes(int pitchWidth, int pitchHeight) {
+        for (int i = 0; i < pitchWalls.size(); i++) {
+            pitchWalls.get(i).updateSize(pitchWidth, pitchHeight);
+        }
     }
 }

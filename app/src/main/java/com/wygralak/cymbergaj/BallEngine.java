@@ -5,6 +5,7 @@ import android.graphics.Paint;
 
 import com.wygralak.cymbergaj.ColissionUtils.ICollisionInterpreter;
 import com.wygralak.cymbergaj.ColissionUtils.ICollisionInvoker;
+import com.wygralak.cymbergaj.PitchWalls.BasePitchWall;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,6 +55,10 @@ public class BallEngine implements ICollisionInvoker {
 
     public void addColissionable(ICollisionInterpreter collisionInterpreter) {
         collisionables.add(collisionInterpreter);
+    }
+
+    public void addColissionables(List<BasePitchWall> list) {
+        collisionables.addAll(list);
     }
 
     public void removeColissionable(ICollisionInterpreter collisionInterpreter) {
