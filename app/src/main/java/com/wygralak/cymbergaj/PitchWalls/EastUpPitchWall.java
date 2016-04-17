@@ -19,12 +19,13 @@ public class EastUpPitchWall extends BasePitchWall {
 
     @Override
     public void updateSize(int pitchWidth, int pitchHeight) {
-        super.set((float)pitchWidth - BASE_WALL_THICKNESS, BASE_WALL_THICKNESS, (float) pitchWidth, (float) pitchHeight - BASE_WALL_THICKNESS);
+        defaultGoalSize = pitchHeight / 2f;
+        super.set((float) pitchWidth - BASE_WALL_THICKNESS, BASE_WALL_THICKNESS, (float) pitchWidth, ((float) pitchHeight / 2f) - defaultGoalSize / 2f);
     }
 
     @Override
     public boolean checkForCollisionAndHandle(ICollisionInvoker invoker, Vector2 currentVector, float x, float y) {
-        if (x + BallEngine.BALL_RADIUS > this.left) {
+        if (y - BallEngine.BALL_RADIUS < this.bottom && x + BallEngine.BALL_RADIUS > this.left) {
             invoker.updateVector(new Vector2(-Math.abs(currentVector.x), currentVector.y));
             return true;
         }

@@ -19,12 +19,13 @@ public class WestDownPitchWall extends BasePitchWall {
 
     @Override
     public void updateSize(int pitchWidth, int pitchHeight) {
-        super.set(0f, (float) pitchHeight / 2f, BASE_WALL_THICKNESS, (float) pitchHeight - BASE_WALL_THICKNESS);
+        defaultGoalSize = pitchHeight / 2f;
+        super.set(0f, (float) pitchHeight / 2f + defaultGoalSize / 2f, BASE_WALL_THICKNESS, (float) pitchHeight - BASE_WALL_THICKNESS);
     }
 
     @Override
     public boolean checkForCollisionAndHandle(ICollisionInvoker invoker, Vector2 currentVector, float x, float y) {
-        if(x - BallEngine.BALL_RADIUS < this.right){
+        if(y + BallEngine.BALL_RADIUS > this.top && x - BallEngine.BALL_RADIUS < this.right){
             invoker.updateVector(new Vector2(Math.abs(currentVector.x), currentVector.y));
             return true;
         }

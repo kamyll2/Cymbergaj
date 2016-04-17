@@ -13,6 +13,7 @@ public abstract class BasePitchWall extends RectF implements ICollisionInterpret
     public static final float DEFAULT_SPEED_ABSORB = 0.9f;
     public static final float INCREASED_SPEED_ABSORB = 0.5f;
     public static final float DECREASED_SPEED_ABSORB = 1.4f;
+    protected static float defaultGoalSize;
 
     protected Paint currentPaint;
 
