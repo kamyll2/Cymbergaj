@@ -22,6 +22,7 @@ public class FingerTrackingView extends View implements ICollisionInterpreter {
     private PlayerEngine player1Engine;
     private PlayerEngine player2Engine;
     private List<BasePitchWall> pitchWalls;
+    private ICymbergajRefree refree;
 
     public FingerTrackingView(Context context) {
         super(context);
@@ -34,6 +35,10 @@ public class FingerTrackingView extends View implements ICollisionInterpreter {
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        setDefaultPositions();
+    }
+
+    public void setDefaultPositions() {
         center_line = (float) getWidth() / 2f;
         if (player1Engine != null) {
             float player1_x = (float) getWidth() - PlayerEngine.PLAYER_RADIUS - 10f;
@@ -164,10 +169,14 @@ public class FingerTrackingView extends View implements ICollisionInterpreter {
     @Override
     public boolean checkForCollisionAndHandle(ICollisionInvoker invoker, Vector2 currentVector, float x, float y) {
         if (x - BallEngine.BALL_RADIUS > getWidth()) {
-            ((MainActivity) getContext()).setStatusText("GOOL LEFT");
+            //((MainActivity) getContext()).setStatusText("GOOL LEFT");
+            invoker.updatePosition(getWidth() / 2f, getHeight() / 2f);
+            refree.notifyPlayer2Scored();
             //return true;
         } else if (x + BallEngine.BALL_RADIUS < 0) {
-            ((MainActivity) getContext()).setStatusText("GOOL RIGHT");
+            //((MainActivity) getContext()).setStatusText("GOOL RIGHT");
+            invoker.updatePosition(getWidth() / 2f, getHeight() / 2f);
+            refree.notifyPlayer1Scored();
             //return true;
         }
         return false;
@@ -182,5 +191,9 @@ public class FingerTrackingView extends View implements ICollisionInterpreter {
         for (int i = 0; i < pitchWalls.size(); i++) {
             pitchWalls.get(i).updateSize(pitchWidth, pitchHeight);
         }
+    }
+
+    public void setRefree(ICymbergajRefree refree) {
+        this.refree = refree;
     }
 }

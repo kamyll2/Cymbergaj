@@ -8,4 +8,5 @@ import com.wygralak.cymbergaj.Vector2;
 public interface ICollisionInvoker {
     void updateVector(Vector2 angle);
     Vector2 getCurrentVector();
+    void updatePosition(float newX, float newY);
 }

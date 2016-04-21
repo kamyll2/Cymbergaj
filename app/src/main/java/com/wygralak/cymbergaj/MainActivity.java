@@ -1,5 +1,6 @@
 package com.wygralak.cymbergaj;
 
+import android.app.Dialog;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.widget.TextView;
@@ -18,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends ActionBarActivity implements ICymbergajRefree {
 
     private TextView textView;
 
@@ -28,6 +29,7 @@ public class MainActivity extends ActionBarActivity {
     private PlayerEngine player2Engine;
     private PlayerEngine player1Engine;
     private List<BasePitchWall> pitchWalls;
+    private Dialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,9 +53,10 @@ public class MainActivity extends ActionBarActivity {
         pitch.post(new Runnable() {
             @Override
             public void run() {
-                startRefreshingThread();
+                startGameWithDelay();
             }
         });
+        pitch.setRefree(this);
         pitch.setBallEngine(ballEngine);
         pitch.setPlayer1Engine(player1Engine);
         pitch.setPlayer2Engine(player2Engine);
@@ -85,7 +88,7 @@ public class MainActivity extends ActionBarActivity {
         super.onDestroy();
     }
 
-    public void setStatusText(final String text){
+    public void setStatusText(final String text) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -94,7 +97,7 @@ public class MainActivity extends ActionBarActivity {
         });
     }
 
-    private void generatePitchWalls(){
+    private void generatePitchWalls() {
         pitchWalls = new ArrayList<>();
         pitchWalls.add(new NorthLeftPitchWall());
         pitchWalls.add(new NorthRightPitchWall());
@@ -104,5 +107,57 @@ public class MainActivity extends ActionBarActivity {
         pitchWalls.add(new WestDownPitchWall());
         pitchWalls.add(new EastUpPitchWall());
         pitchWalls.add(new EastDownPitchWall());
+    }
+
+    @Override
+    public void notifyPlayer1Scored() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                refreshingThread.interrupt();
+                getSupportActionBar().setTitle("GOOL PLAYER 1");
+                pitch.setDefaultPositions();
+                startGameWithDelay();
+            }
+        });
+    }
+
+    @Override
+    public void notifyPlayer2Scored() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                refreshingThread.interrupt();
+                getSupportActionBar().setTitle("GOOL PLAYER 2");
+                pitch.setDefaultPositions();
+                startGameWithDelay();
+            }
+        });
+    }
+
+    private void startGameWithDelay() {
+        if (dialog == null) {
+            dialog = new Dialog(this);
+            dialog.setCancelable(false);
+        }
+        dialog.setTitle("3");
+        dialog.show();
+        new Thread(new CountdownRunnable(this)).start();
+
+    }
+
+    @Override
+    public void notifyCountdown(final int i) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (i != 0) {
+                    dialog.setTitle(String.valueOf(i));
+                } else {
+                    dialog.hide();
+                    startRefreshingThread();
+                }
+            }
+        });
     }
 }

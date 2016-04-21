@@ -86,4 +86,10 @@ public class BallEngine implements ICollisionInvoker {
     public Vector2 getCurrentVector() {
         return currentVector;
     }
+
+    @Override
+    public void updatePosition(float newX, float newY) {
+        currentY = newY;
+        currentX = newX;
+    }
 }
