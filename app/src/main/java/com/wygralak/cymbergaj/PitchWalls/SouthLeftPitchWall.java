@@ -24,11 +24,17 @@ public class SouthLeftPitchWall extends BasePitchWall {
 
     @Override
     public boolean checkForCollisionAndHandle(ICollisionInvoker invoker, Vector2 currentVector, float x, float y) {
-        if (y + BallEngine.BALL_RADIUS > this.top) {
-            invoker.updateSpeedWithRatio(DEFAULT_SPEED_ABSORB);
+        if (isCollision(x, y)) {
             invoker.updateVector(new Vector2(currentVector.x, -Math.abs(currentVector.y)));
+            validateBallOutsideWall(invoker);
+            invoker.updateSpeedWithRatio(DEFAULT_SPEED_ABSORB);
             return true;
         }
         return false;
+    }
+
+    @Override
+    protected boolean isCollision(float x, float y) {
+        return y + BallEngine.BALL_RADIUS > this.top;
     }
 }

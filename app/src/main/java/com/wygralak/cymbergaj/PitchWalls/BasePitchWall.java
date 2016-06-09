@@ -4,6 +4,7 @@ import android.graphics.Paint;
 import android.graphics.RectF;
 
 import com.wygralak.cymbergaj.ColissionUtils.ICollisionInterpreter;
+import com.wygralak.cymbergaj.ColissionUtils.ICollisionInvoker;
 
 /**
  * Created by Kamil on 2016-04-14.
@@ -22,4 +23,20 @@ public abstract class BasePitchWall extends RectF implements ICollisionInterpret
     }
 
     public abstract void updateSize(int pitchWidth, int pitchHeight);
+
+    protected abstract boolean isCollision(float x, float y);
+
+    protected void validateBallOutsideWall(ICollisionInvoker invoker){
+        float currX;
+        float currY;
+        float currSpeed = invoker.getCurrentSpeed();
+        invoker.setSpeedDirectly(1f);
+        do {
+            invoker.updatePosition();
+            currX = invoker.getCurrentPositionX();
+            currY = invoker.getCurrentPositionY();
+        } while (isCollision(currX, currY));
+
+        invoker.setSpeedDirectly(currSpeed);
+    }
 }
