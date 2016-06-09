@@ -38,8 +38,8 @@ public class MainActivity extends ActionBarActivity implements ICymbergajRefree 
         generatePitchWalls();
         textView = (TextView) findViewById(R.id.statusText);
         ballEngine = new BallEngine(this);
-        player1Engine = new PlayerEngine();
-        player2Engine = new PlayerEngine();
+        player1Engine = new PlayerEngine(this);
+        player2Engine = new PlayerEngine(this);
         pitch = (FingerTrackingView) findViewById(R.id.pitch);
         pitch.postDelayed(new Runnable() {
             @Override
@@ -71,6 +71,7 @@ public class MainActivity extends ActionBarActivity implements ICymbergajRefree 
                     try {
                         Thread.sleep(15);
                         ballEngine.updatePosition();
+                        ballEngine.checkForCollisions();
                         pitch.postInvalidate();
                     } catch (InterruptedException e) {
                         e.printStackTrace();
@@ -117,6 +118,7 @@ public class MainActivity extends ActionBarActivity implements ICymbergajRefree 
                 refreshingThread.interrupt();
                 getSupportActionBar().setTitle("GOOL PLAYER 1");
                 pitch.setDefaultPositions();
+                ballEngine.setDefaultSpeed();
                 startGameWithDelay();
             }
         });
@@ -130,6 +132,7 @@ public class MainActivity extends ActionBarActivity implements ICymbergajRefree 
                 refreshingThread.interrupt();
                 getSupportActionBar().setTitle("GOOL PLAYER 2");
                 pitch.setDefaultPositions();
+                ballEngine.setDefaultSpeed();
                 startGameWithDelay();
             }
         });

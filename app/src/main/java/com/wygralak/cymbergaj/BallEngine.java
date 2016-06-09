@@ -16,6 +16,7 @@ import java.util.List;
 public class BallEngine implements ICollisionInvoker {
     public static final float BALL_RADIUS = 20f;
     public static final Paint BALL_PAINT = new Paint();
+    public static final float defaultSpeed = 6f;
 
     protected List<ICollisionInterpreter> collisionables;
 
@@ -23,7 +24,7 @@ public class BallEngine implements ICollisionInvoker {
     protected float currentY;
     private float pitchWidth;
     private float pitchHeight;
-    protected int speed = 6;
+    protected float speed = defaultSpeed;
 
     protected MainActivity mainActivity;
 
@@ -65,10 +66,17 @@ public class BallEngine implements ICollisionInvoker {
         collisionables.remove(collisionInterpreter);
     }
 
+    public void setDefaultSpeed(){
+        speed = defaultSpeed;
+    }
+
+    @Override
     public void updatePosition() {
         currentX = currentX + speed * currentVector.x;
         currentY = currentY + speed * currentVector.y;
+    }
 
+    public void checkForCollisions(){
         for (int i = 0; i < collisionables.size(); i++) {
             if (collisionables.get(i).checkForCollisionAndHandle(this, currentVector, currentX, currentY)) {
                 break;
@@ -79,7 +87,7 @@ public class BallEngine implements ICollisionInvoker {
     @Override
     public void updateVector(Vector2 angle) {
         currentVector = angle;
-        mainActivity.setStatusText(currentVector.toString());
+        //mainActivity.setStatusText(currentVector.toString());
     }
 
     @Override
@@ -88,8 +96,13 @@ public class BallEngine implements ICollisionInvoker {
     }
 
     @Override
-    public void updatePosition(float newX, float newY) {
+    public void updatePositionDirectly(float newX, float newY) {
         currentY = newY;
         currentX = newX;
+    }
+
+    @Override
+    public void updateSpeedWithRatio(float ratio) {
+        speed = speed * ratio;
     }
 }

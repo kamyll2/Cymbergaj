@@ -170,12 +170,12 @@ public class FingerTrackingView extends View implements ICollisionInterpreter {
     public boolean checkForCollisionAndHandle(ICollisionInvoker invoker, Vector2 currentVector, float x, float y) {
         if (x - BallEngine.BALL_RADIUS > getWidth()) {
             //((MainActivity) getContext()).setStatusText("GOOL LEFT");
-            invoker.updatePosition(getWidth() / 2f, getHeight() / 2f);
+            invoker.updatePositionDirectly(getWidth() / 2f, getHeight() / 2f);
             refree.notifyPlayer2Scored();
             //return true;
         } else if (x + BallEngine.BALL_RADIUS < 0) {
             //((MainActivity) getContext()).setStatusText("GOOL RIGHT");
-            invoker.updatePosition(getWidth() / 2f, getHeight() / 2f);
+            invoker.updatePositionDirectly(getWidth() / 2f, getHeight() / 2f);
             refree.notifyPlayer1Scored();
             //return true;
         }

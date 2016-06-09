@@ -6,8 +6,6 @@ import android.graphics.Paint;
 import com.wygralak.cymbergaj.ColissionUtils.ICollisionInterpreter;
 import com.wygralak.cymbergaj.ColissionUtils.ICollisionInvoker;
 
-import java.util.Vector;
-
 /**
  * Created by Kamil on 2016-03-10.
  */
@@ -20,14 +18,32 @@ public class PlayerEngine implements ICollisionInterpreter {
 
     private float currentX;
     private float currentY;
+    private MainActivity mainActivity;
+    private float speedRatio = -1f;
 
-    public PlayerEngine() {
+    public PlayerEngine(MainActivity mainActivity) {
+        //TODO delete mainActivity
+        this.mainActivity = mainActivity;
         PLAYER_PAINT.setColor(Color.RED);
     }
 
     public void updatePosition(float x, float y) {
+        updateCurrentSpeedRatio(currentX, currentY, x, y);
         currentX = x;
         currentY = y;
+    }
+
+    private void updateCurrentSpeedRatio(float x1, float y1, float x2, float y2) {
+        float length = getLengthBetweenPoints(x1, y1, x2, y2);
+        if (length > 100f) {
+            speedRatio = 3.0f;
+        } else {
+            speedRatio = 0.023f * (length - 100) + 3.0f;
+        }
+    }
+
+    private float getLengthBetweenPoints(float x1, float y1, float x2, float y2) {
+        return (float) Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
     }
 
     public float getCurrentX() {
@@ -52,6 +68,8 @@ public class PlayerEngine implements ICollisionInterpreter {
             float collisionPointY = ((y * PLAYER_RADIUS) + (currentY * BallEngine.BALL_RADIUS)) / (BallEngine.BALL_RADIUS + PLAYER_RADIUS);
             Vector2 collisionVector = Vector2.createVector2FromTwoPoints(collisionPointX, collisionPointY, x, y).normalize();
             invoker.updateVector(currentVector.add(collisionVector).normalize());
+            invoker.updateSpeedWithRatio(speedRatio);
+            invoker.updatePosition();
         }
         return false;
     }
