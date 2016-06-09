@@ -71,6 +71,7 @@ public class MainActivity extends ActionBarActivity implements ICymbergajRefree 
                     try {
                         Thread.sleep(15);
                         ballEngine.updatePosition();
+                        ballEngine.considerFriction();
                         ballEngine.checkForCollisions();
                         pitch.postInvalidate();
                     } catch (InterruptedException e) {

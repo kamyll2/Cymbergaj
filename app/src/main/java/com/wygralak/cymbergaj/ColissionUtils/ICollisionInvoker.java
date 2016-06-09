@@ -8,7 +8,13 @@ import com.wygralak.cymbergaj.Vector2;
 public interface ICollisionInvoker {
     void updateVector(Vector2 angle);
     Vector2 getCurrentVector();
+
     void updatePositionDirectly(float newX, float newY);
-    void updateSpeedWithRatio(float ratio);
     void updatePosition();
+    float getCurrentPositionX();
+    float getCurrentPositionY();
+
+    float getCurrentSpeed();
+    void setSpeedDirectly(float speed);
+    void updateSpeedWithRatio(float ratio);
 }

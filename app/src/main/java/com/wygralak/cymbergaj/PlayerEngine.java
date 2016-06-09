@@ -61,16 +61,32 @@ public class PlayerEngine implements ICollisionInterpreter {
 
     @Override
     public boolean checkForCollisionAndHandle(ICollisionInvoker invoker, Vector2 currentVector, float x, float y) {
-        float collisionDistance = BallEngine.BALL_RADIUS + PLAYER_RADIUS;
-        float actualDistance = (float) Math.sqrt(Math.pow(currentX - x, 2) + Math.pow(currentY - y, 2));
-        if (actualDistance < collisionDistance) {
+        if (isCollision(x, y)) {
             float collisionPointX = ((x * PLAYER_RADIUS) + (currentX * BallEngine.BALL_RADIUS)) / (BallEngine.BALL_RADIUS + PLAYER_RADIUS);
             float collisionPointY = ((y * PLAYER_RADIUS) + (currentY * BallEngine.BALL_RADIUS)) / (BallEngine.BALL_RADIUS + PLAYER_RADIUS);
             Vector2 collisionVector = Vector2.createVector2FromTwoPoints(collisionPointX, collisionPointY, x, y).normalize();
             invoker.updateVector(currentVector.add(collisionVector).normalize());
+
+            float currX;
+            float currY;
+            float currSpeed = invoker.getCurrentSpeed();
+            invoker.setSpeedDirectly(1f);
+            do{
+                invoker.updatePosition();
+                currX = invoker.getCurrentPositionX();
+                currY = invoker.getCurrentPositionY();
+            }while(isCollision(currX, currY));
+
+            invoker.setSpeedDirectly(currSpeed);
             invoker.updateSpeedWithRatio(speedRatio);
             invoker.updatePosition();
         }
         return false;
+    }
+
+    private boolean isCollision(float x, float y) {
+        float collisionDistance = BallEngine.BALL_RADIUS + PLAYER_RADIUS;
+        float actualDistance = (float) Math.sqrt(Math.pow(currentX - x, 2) + Math.pow(currentY - y, 2));
+        return actualDistance < collisionDistance;
     }
 }

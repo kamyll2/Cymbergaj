@@ -75,7 +75,30 @@ public class BallEngine implements ICollisionInvoker {
     public void updatePosition() {
         currentX = currentX + speed * currentVector.x;
         currentY = currentY + speed * currentVector.y;
+    }
+
+    public void considerFriction(){
         speed *= SELF_SLOWING_RATIO;
+    }
+
+    @Override
+    public float getCurrentPositionX() {
+        return currentX;
+    }
+
+    @Override
+    public float getCurrentPositionY() {
+        return currentY;
+    }
+
+    @Override
+    public float getCurrentSpeed() {
+        return speed;
+    }
+
+    @Override
+    public void setSpeedDirectly(float speed) {
+        this.speed = speed;
     }
 
     public void checkForCollisions(){
