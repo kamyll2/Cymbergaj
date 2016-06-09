@@ -71,14 +71,18 @@ public class PlayerEngine implements ICollisionInterpreter {
             float currY;
             float currSpeed = invoker.getCurrentSpeed();
             invoker.setSpeedDirectly(1f);
-            do{
+            do {
                 invoker.updatePosition();
                 currX = invoker.getCurrentPositionX();
                 currY = invoker.getCurrentPositionY();
-            }while(isCollision(currX, currY));
+            } while (isCollision(currX, currY));
 
             invoker.setSpeedDirectly(currSpeed);
             invoker.updateSpeedWithRatio(speedRatio);
+            float minSpeed = computeMinimumSpeed(speedRatio);
+            if (invoker.getCurrentSpeed() < minSpeed) {
+                invoker.setSpeedDirectly(minSpeed);
+            }
             invoker.updatePosition();
         }
         return false;
@@ -88,5 +92,11 @@ public class PlayerEngine implements ICollisionInterpreter {
         float collisionDistance = BallEngine.BALL_RADIUS + PLAYER_RADIUS;
         float actualDistance = (float) Math.sqrt(Math.pow(currentX - x, 2) + Math.pow(currentY - y, 2));
         return actualDistance < collisionDistance;
+    }
+
+    private float computeMinimumSpeed(float speedRatio) {
+        //ratio=0.7 => minSpeed=0
+        //ratio=3.0 => minSpeed=35
+        return 15.2173f * speedRatio - 10.6521f;
     }
 }
