@@ -15,6 +15,7 @@ import java.util.List;
  */
 public class BallEngine implements ICollisionInvoker {
     public static final float BALL_RADIUS = 20f;
+    public static final float SELF_SLOWING_RATIO = 0.995f;
     public static final Paint BALL_PAINT = new Paint();
     public static final float defaultSpeed = 6f;
 
@@ -74,6 +75,7 @@ public class BallEngine implements ICollisionInvoker {
     public void updatePosition() {
         currentX = currentX + speed * currentVector.x;
         currentY = currentY + speed * currentVector.y;
+        speed *= SELF_SLOWING_RATIO;
     }
 
     public void checkForCollisions(){

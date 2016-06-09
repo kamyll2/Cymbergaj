@@ -26,6 +26,7 @@ public class EastUpPitchWall extends BasePitchWall {
     @Override
     public boolean checkForCollisionAndHandle(ICollisionInvoker invoker, Vector2 currentVector, float x, float y) {
         if (y - BallEngine.BALL_RADIUS < this.bottom && x + BallEngine.BALL_RADIUS > this.left) {
+            invoker.updateSpeedWithRatio(DEFAULT_SPEED_ABSORB);
             invoker.updateVector(new Vector2(-Math.abs(currentVector.x), currentVector.y));
             return true;
         }
