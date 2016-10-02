@@ -62,11 +62,6 @@ public class CymbergajSurfaceView2 extends SurfaceView implements SurfaceHolder.
         private int mCanvasWidth = 1;
 
         /**
-         * Message handler used by thread to interact with TextView
-         */
-        private Handler mHandler;
-
-        /**
          * Used to figure out elapsed time between frames
          */
         private long mLastTime;
@@ -101,11 +96,9 @@ public class CymbergajSurfaceView2 extends SurfaceView implements SurfaceHolder.
          */
         private float center_line;
 
-        public CymbergajThread(SurfaceHolder surfaceHolder, Context context,
-                               Handler handler) {
+        public CymbergajThread(SurfaceHolder surfaceHolder, Context context) {
             // get handles to some important objects
             mSurfaceHolder = surfaceHolder;
-            mHandler = handler;
             mContext = context;
 
             generatePitchWalls();
@@ -133,6 +126,14 @@ public class CymbergajSurfaceView2 extends SurfaceView implements SurfaceHolder.
 
         public boolean isGameInStateReady() {
             return mMode == STATE_READY;
+        }
+
+        public boolean isGameInStateRunning() {
+            return mMode == STATE_RUNNING;
+        }
+
+        public boolean isGameInStatePaused() {
+            return mMode == STATE_PAUSE;
         }
 
         @Override
@@ -168,7 +169,9 @@ public class CymbergajSurfaceView2 extends SurfaceView implements SurfaceHolder.
          */
         public void pause() {
             synchronized (mSurfaceHolder) {
-                if (mMode == STATE_RUNNING) setState(STATE_PAUSE);
+                if (mMode == STATE_RUNNING) {
+                    setState(STATE_PAUSE);
+                }
             }
         }
 
@@ -274,42 +277,8 @@ public class CymbergajSurfaceView2 extends SurfaceView implements SurfaceHolder.
             synchronized (mSurfaceHolder) {
                 mMode = mode;
 
-                if (mMode == STATE_RUNNING) {
-                    Message msg = mHandler.obtainMessage();
-                    Bundle b = new Bundle();
-                    b.putString("text", "");
-                    b.putInt("viz", View.INVISIBLE);
-                    msg.setData(b);
-                    mHandler.sendMessage(msg);
-                } else {
-                    //TODO state !running, launch screen
-                    /*mRotating = 0;
-                    mEngineFiring = false;
-                    Resources res = mContext.getResources();
-                    CharSequence str = "";
-                    if (mMode == STATE_READY)
-                        str = res.getText(R.string.mode_ready);
-                    else if (mMode == STATE_PAUSE)
-                        str = res.getText(R.string.mode_pause);
-                    else if (mMode == STATE_LOSE)
-                        str = res.getText(R.string.mode_lose);
-                    else if (mMode == STATE_WIN)
-                        str = res.getString(R.string.mode_win_prefix)
-                                + mWinsInARow + " "
-                                + res.getString(R.string.mode_win_suffix);
-
-                    if (message != null) {
-                        str = message + "\n" + str;
-                    }
-
-                    if (mMode == STATE_LOSE) mWinsInARow = 0;
-
-                    Message msg = mHandler.obtainMessage();
-                    Bundle b = new Bundle();
-                    b.putString("text", str.toString());
-                    b.putInt("viz", View.VISIBLE);
-                    msg.setData(b);
-                    mHandler.sendMessage(msg);*/
+                if (mMode == STATE_PAUSE) {
+                    mRefree.notifyGamePaused();
                 }
             }
         }
@@ -486,7 +455,6 @@ public class CymbergajSurfaceView2 extends SurfaceView implements SurfaceHolder.
             double elapsed = (now - mLastTime) / 1000.0;
 
             double ratio = elapsed / 0.015d;
-            //TODO uwzględnić elapsed
             ballEngine.updatePosition(ratio);
             ballEngine.considerFriction();
             ballEngine.checkForCollisions();
@@ -516,14 +484,7 @@ public class CymbergajSurfaceView2 extends SurfaceView implements SurfaceHolder.
         holder.addCallback(this);
 
         // create thread only; it's started in surfaceCreated()
-        thread = new CymbergajThread(holder, context, new Handler() {
-            @Override
-            public void handleMessage(Message m) {
-
-                //mStatusText.setVisibility(m.getData().getInt("viz"));
-                //mStatusText.setText(m.getData().getString("text"));
-            }
-        });
+        thread = new CymbergajThread(holder, context);
 
         setFocusable(true); // make sure we get key events
     }

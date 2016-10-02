@@ -59,6 +59,25 @@ public class MainActivity extends ActionBarActivity implements IMessageViewer, I
                             });
                         }
                     })).start();
+                } else if (gameThread.isGameInStatePaused() && !countdownRunning) {
+                    countdownRunning = true;
+                    new Thread(new CountdownRunnable(new CountdownRunnable.ICountdownNotifier() {
+                        @Override
+                        public void notifyCountdown(final int step) {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    if (step != 0) {
+                                        showCountdown("Game will resume in", "" + step);
+                                    } else {
+                                        hideMessageBox();
+                                        gameThread.doStart();
+                                        countdownRunning = false;
+                                    }
+                                }
+                            });
+                        }
+                    })).start();
                 }
             }
         });
@@ -70,7 +89,7 @@ public class MainActivity extends ActionBarActivity implements IMessageViewer, I
 
     @Override
     protected void onPause() {
-        surfaceView.getThread().pause(); // pause game when Activity pauses
+        gameThread.pause(); // pause game when Activity pauses
         super.onPause();
     }
 
@@ -177,7 +196,32 @@ public class MainActivity extends ActionBarActivity implements IMessageViewer, I
             }
         }
     }
-/*
+
+    @Override
+    public void notifyGamePaused() {
+        if (!countdownRunning) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    showMessage("Game paused\nTap screen to resume\nClick back to quit");
+                }
+            });
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (countdownRunning) {
+            return;
+        }
+        if (gameThread.isGameInStateRunning()) {
+            gameThread.pause();
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    /*
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
