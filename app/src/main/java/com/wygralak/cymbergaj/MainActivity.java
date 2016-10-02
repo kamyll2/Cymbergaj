@@ -19,6 +19,8 @@ public class MainActivity extends ActionBarActivity implements IMessageViewer, I
     CymbergajSurfaceView2 surfaceView;
     private CymbergajSurfaceView2.CymbergajThread gameThread;
     private boolean countdownRunning;
+    private int player1Goals = 0;
+    private int player2Goals = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +39,8 @@ public class MainActivity extends ActionBarActivity implements IMessageViewer, I
             public void onClick(View view) {
                 if (gameThread.isGameInStateReady() && !countdownRunning) {
                     countdownRunning = true;
+                    player1Goals = 0;
+                    player2Goals = 0;
                     new Thread(new CountdownRunnable(new CountdownRunnable.ICountdownNotifier() {
                         @Override
                         public void notifyCountdown(final int step) {
@@ -46,6 +50,7 @@ public class MainActivity extends ActionBarActivity implements IMessageViewer, I
                                     if (step != 0) {
                                         showCountdown("Game will start in", "" + step);
                                     } else {
+                                        updateTitleBar();
                                         hideMessageBox();
                                         gameThread.doStart();
                                         countdownRunning = false;
@@ -57,6 +62,10 @@ public class MainActivity extends ActionBarActivity implements IMessageViewer, I
                 }
             }
         });
+    }
+
+    private void updateTitleBar() {
+        getSupportActionBar().setTitle("Player 2        " + player2Goals + ":" + player1Goals + "         Player 1");
     }
 
     @Override
@@ -97,49 +106,75 @@ public class MainActivity extends ActionBarActivity implements IMessageViewer, I
 
     @Override
     public void notifyPlayer1Scored() {
-        if (!countdownRunning) {
-            countdownRunning = true;
-            new Thread(new CountdownRunnable(new CountdownRunnable.ICountdownNotifier() {
+        player1Goals++;
+        if (player1Goals >= 7) {
+            runOnUiThread(new Runnable() {
                 @Override
-                public void notifyCountdown(final int step) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (step != 0) {
-                                showCountdown("Player1 scored a goal!", "" + step);
-                            } else {
-                                hideMessageBox();
-                                gameThread.doStart();
-                                countdownRunning = false;
-                            }
-                        }
-                    });
+                public void run() {
+                    updateTitleBar();
+                    gameThread.setState(CymbergajSurfaceView2.CymbergajThread.STATE_READY);
+                    showMessage("Player 1 won the match!\nTap screen to play again\nClick back to quit");
                 }
-            })).start();
+            });
+        } else {
+            if (!countdownRunning) {
+                countdownRunning = true;
+                new Thread(new CountdownRunnable(new CountdownRunnable.ICountdownNotifier() {
+                    @Override
+                    public void notifyCountdown(final int step) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (step != 0) {
+                                    showCountdown("Player 1 scored a goal!", "" + step);
+                                    updateTitleBar();
+                                } else {
+                                    hideMessageBox();
+                                    gameThread.doStart();
+                                    countdownRunning = false;
+                                }
+                            }
+                        });
+                    }
+                })).start();
+            }
         }
     }
 
     @Override
     public void notifyPlayer2Scored() {
-        if (!countdownRunning) {
-            countdownRunning = true;
-            new Thread(new CountdownRunnable(new CountdownRunnable.ICountdownNotifier() {
+        player2Goals++;
+        if (player2Goals >= 7) {
+            runOnUiThread(new Runnable() {
                 @Override
-                public void notifyCountdown(final int step) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (step != 0) {
-                                showCountdown("Player2 scored a goal!", "" + step);
-                            } else {
-                                hideMessageBox();
-                                gameThread.doStart();
-                                countdownRunning = false;
-                            }
-                        }
-                    });
+                public void run() {
+                    updateTitleBar();
+                    gameThread.setState(CymbergajSurfaceView2.CymbergajThread.STATE_READY);
+                    showMessage("Player 2 won the match!\nTap screen to play again\nClick back to quit");
                 }
-            })).start();
+            });
+        } else {
+            if (!countdownRunning) {
+                countdownRunning = true;
+                new Thread(new CountdownRunnable(new CountdownRunnable.ICountdownNotifier() {
+                    @Override
+                    public void notifyCountdown(final int step) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (step != 0) {
+                                    showCountdown("Player 2 scored a goal!", "" + step);
+                                    updateTitleBar();
+                                } else {
+                                    hideMessageBox();
+                                    gameThread.doStart();
+                                    countdownRunning = false;
+                                }
+                            }
+                        });
+                    }
+                })).start();
+            }
         }
     }
 /*
