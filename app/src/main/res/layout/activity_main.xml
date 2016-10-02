@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <com.wygralak.cymbergaj.FingerTrackingView
+    <com.wygralak.cymbergaj.Engine.FingerTrackingView
         android:id="@+id/pitch"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

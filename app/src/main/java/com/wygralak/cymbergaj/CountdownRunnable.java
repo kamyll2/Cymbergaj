@@ -1,5 +1,7 @@
 package com.wygralak.cymbergaj;
 
+import com.wygralak.cymbergaj.Engine.ICymbergajRefree;
+
 /**
  * Created by Kamil on 2016-04-17.
  */

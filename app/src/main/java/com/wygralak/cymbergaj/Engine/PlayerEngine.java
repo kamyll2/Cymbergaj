@@ -1,10 +1,12 @@
-package com.wygralak.cymbergaj;
+package com.wygralak.cymbergaj.Engine;
 
 import android.graphics.Color;
 import android.graphics.Paint;
 
 import com.wygralak.cymbergaj.ColissionUtils.ICollisionInterpreter;
 import com.wygralak.cymbergaj.ColissionUtils.ICollisionInvoker;
+import com.wygralak.cymbergaj.MainActivity;
+import com.wygralak.cymbergaj.Vector2;
 
 /**
  * Created by Kamil on 2016-03-10.

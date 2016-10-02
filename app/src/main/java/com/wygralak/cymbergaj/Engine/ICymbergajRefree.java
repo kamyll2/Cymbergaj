@@ -1,4 +1,4 @@
-package com.wygralak.cymbergaj;
+package com.wygralak.cymbergaj.Engine;
 
 /**
  * Created by Kamil on 2016-04-17.

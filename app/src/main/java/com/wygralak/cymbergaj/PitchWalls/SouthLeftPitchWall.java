@@ -3,7 +3,7 @@ package com.wygralak.cymbergaj.PitchWalls;
 import android.graphics.Color;
 import android.graphics.Paint;
 
-import com.wygralak.cymbergaj.BallEngine;
+import com.wygralak.cymbergaj.Engine.BallEngine;
 import com.wygralak.cymbergaj.ColissionUtils.ICollisionInvoker;
 import com.wygralak.cymbergaj.Vector2;
 

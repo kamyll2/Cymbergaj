@@ -1,4 +1,4 @@
-package com.wygralak.cymbergaj;
+package com.wygralak.cymbergaj.Engine;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -9,6 +9,7 @@ import android.view.View;
 import com.wygralak.cymbergaj.ColissionUtils.ICollisionInterpreter;
 import com.wygralak.cymbergaj.ColissionUtils.ICollisionInvoker;
 import com.wygralak.cymbergaj.PitchWalls.BasePitchWall;
+import com.wygralak.cymbergaj.Vector2;
 
 import java.util.List;
 

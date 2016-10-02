@@ -5,6 +5,10 @@ import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.widget.TextView;
 
+import com.wygralak.cymbergaj.Engine.BallEngine;
+import com.wygralak.cymbergaj.Engine.FingerTrackingView;
+import com.wygralak.cymbergaj.Engine.ICymbergajRefree;
+import com.wygralak.cymbergaj.Engine.PlayerEngine;
 import com.wygralak.cymbergaj.PitchWalls.BasePitchWall;
 import com.wygralak.cymbergaj.PitchWalls.EastDownPitchWall;
 import com.wygralak.cymbergaj.PitchWalls.EastUpPitchWall;
