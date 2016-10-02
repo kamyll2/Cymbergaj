@@ -6,35 +6,46 @@ import android.os.Bundle;
 import android.widget.TextView;
 
 import com.wygralak.cymbergaj.Engine.BallEngine;
-import com.wygralak.cymbergaj.Engine.FingerTrackingView;
-import com.wygralak.cymbergaj.Engine.ICymbergajRefree;
+import com.wygralak.cymbergaj.Engine.CymbergajSurfaceView2;
 import com.wygralak.cymbergaj.Engine.PlayerEngine;
 import com.wygralak.cymbergaj.PitchWalls.BasePitchWall;
-import com.wygralak.cymbergaj.PitchWalls.EastDownPitchWall;
-import com.wygralak.cymbergaj.PitchWalls.EastUpPitchWall;
-import com.wygralak.cymbergaj.PitchWalls.NorthLeftPitchWall;
-import com.wygralak.cymbergaj.PitchWalls.NorthRightPitchWall;
-import com.wygralak.cymbergaj.PitchWalls.SouthLeftPitchWall;
-import com.wygralak.cymbergaj.PitchWalls.SouthRightPitchWall;
-import com.wygralak.cymbergaj.PitchWalls.WestDownPitchWall;
-import com.wygralak.cymbergaj.PitchWalls.WestUpPitchWall;
 
-import java.util.ArrayList;
 import java.util.List;
 
 
-public class MainActivity extends ActionBarActivity implements ICymbergajRefree {
+public class MainActivity extends ActionBarActivity {//implements ICymbergajRefree {
 
     private TextView textView;
 
-    FingerTrackingView pitch;
-    private Thread refreshingThread;
+    CymbergajSurfaceView2 pitch;
+    private CymbergajSurfaceView2.CymbergajThread gameThread;
     private BallEngine ballEngine;
     private PlayerEngine player2Engine;
     private PlayerEngine player1Engine;
     private List<BasePitchWall> pitchWalls;
     private Dialog dialog;
 
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        // tell system to use the layout defined in our XML file
+        setContentView(R.layout.activity_main);
+
+        // get handles to the LunarView from XML, and its LunarThread
+        pitch = (CymbergajSurfaceView2) findViewById(R.id.pitch);
+        gameThread = pitch.getThread();
+
+        // give the LunarView a handle to the TextView used for messages
+        pitch.setTextView((TextView) findViewById(R.id.statusText));
+    }
+
+    @Override
+    protected void onPause() {
+        pitch.getThread().pause(); // pause game when Activity pauses
+        super.onPause();
+    }
+/*
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -167,5 +178,5 @@ public class MainActivity extends ActionBarActivity implements ICymbergajRefree 
                 }
             }
         });
-    }
+    }*/
 }

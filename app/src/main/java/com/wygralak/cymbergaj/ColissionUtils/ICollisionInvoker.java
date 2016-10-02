@@ -10,7 +10,7 @@ public interface ICollisionInvoker {
     Vector2 getCurrentVector();
 
     void updatePositionDirectly(float newX, float newY);
-    void updatePosition();
+    void updatePosition(double ratio);
     float getCurrentPositionX();
     float getCurrentPositionY();
 

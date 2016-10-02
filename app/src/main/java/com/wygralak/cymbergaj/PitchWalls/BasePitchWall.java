@@ -32,7 +32,7 @@ public abstract class BasePitchWall extends RectF implements ICollisionInterpret
         float currSpeed = invoker.getCurrentSpeed();
         invoker.setSpeedDirectly(1f);
         do {
-            invoker.updatePosition();
+            invoker.updatePosition(1d);
             currX = invoker.getCurrentPositionX();
             currY = invoker.getCurrentPositionY();
         } while (isCollision(currX, currY));

@@ -5,7 +5,6 @@ import android.graphics.Paint;
 
 import com.wygralak.cymbergaj.ColissionUtils.ICollisionInterpreter;
 import com.wygralak.cymbergaj.ColissionUtils.ICollisionInvoker;
-import com.wygralak.cymbergaj.MainActivity;
 import com.wygralak.cymbergaj.Vector2;
 
 /**
@@ -20,12 +19,9 @@ public class PlayerEngine implements ICollisionInterpreter {
 
     private float currentX;
     private float currentY;
-    private MainActivity mainActivity;
     private float speedRatio = -1f;
 
-    public PlayerEngine(MainActivity mainActivity) {
-        //TODO delete mainActivity
-        this.mainActivity = mainActivity;
+    public PlayerEngine() {
         PLAYER_PAINT.setColor(Color.RED);
     }
 
@@ -74,7 +70,7 @@ public class PlayerEngine implements ICollisionInterpreter {
             float currSpeed = invoker.getCurrentSpeed();
             invoker.setSpeedDirectly(1f);
             do {
-                invoker.updatePosition();
+                invoker.updatePosition(1d);
                 currX = invoker.getCurrentPositionX();
                 currY = invoker.getCurrentPositionY();
             } while (isCollision(currX, currY));
@@ -85,7 +81,7 @@ public class PlayerEngine implements ICollisionInterpreter {
             if (invoker.getCurrentSpeed() < minSpeed) {
                 invoker.setSpeedDirectly(minSpeed);
             }
-            invoker.updatePosition();
+            invoker.updatePosition(1d);
         }
         return false;
     }

@@ -4,11 +4,10 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <com.wygralak.cymbergaj.Engine.FingerTrackingView
+    <com.wygralak.cymbergaj.Engine.CymbergajSurfaceView2
         android:id="@+id/pitch"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/abc_search_url_text_normal" />
+        android:layout_height="match_parent"/>
 
 <TextView
     android:id="@+id/statusText"

@@ -5,7 +5,6 @@ import android.graphics.Paint;
 
 import com.wygralak.cymbergaj.ColissionUtils.ICollisionInterpreter;
 import com.wygralak.cymbergaj.ColissionUtils.ICollisionInvoker;
-import com.wygralak.cymbergaj.MainActivity;
 import com.wygralak.cymbergaj.PitchWalls.BasePitchWall;
 import com.wygralak.cymbergaj.Vector2;
 
@@ -29,14 +28,10 @@ public class BallEngine implements ICollisionInvoker {
     private float pitchHeight;
     protected float speed = defaultSpeed;
 
-    protected MainActivity mainActivity;
-
     private Vector2 currentVector;
 
 
-    public BallEngine(MainActivity mainActivity) {
-        //TODO delete mainActivity from fields
-        this.mainActivity = mainActivity;
+    public BallEngine() {
         BALL_PAINT.setColor(Color.WHITE);
         collisionables = new ArrayList<>();
         currentVector = new Vector2(0.1f, 0.1f).normalize();
@@ -74,9 +69,10 @@ public class BallEngine implements ICollisionInvoker {
     }
 
     @Override
-    public void updatePosition() {
-        currentX = currentX + speed * currentVector.x;
-        currentY = currentY + speed * currentVector.y;
+    public void updatePosition(double ratio) {
+        float speedWithRatio = speed * (float)ratio;
+        currentX = currentX + speedWithRatio * currentVector.x;
+        currentY = currentY + speedWithRatio * currentVector.y;
     }
 
     public void considerFriction(){
