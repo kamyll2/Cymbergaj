@@ -1,49 +1,146 @@
 package com.wygralak.cymbergaj;
 
-import android.app.Dialog;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.wygralak.cymbergaj.Engine.BallEngine;
 import com.wygralak.cymbergaj.Engine.CymbergajSurfaceView2;
-import com.wygralak.cymbergaj.Engine.PlayerEngine;
-import com.wygralak.cymbergaj.PitchWalls.BasePitchWall;
-
-import java.util.List;
+import com.wygralak.cymbergaj.Engine.ICymbergajRefree;
 
 
-public class MainActivity extends ActionBarActivity {//implements ICymbergajRefree {
+public class MainActivity extends ActionBarActivity implements IMessageViewer, ICymbergajRefree {
 
-    private TextView textView;
+    RelativeLayout overlayView;
+    TextView messageTextView;
+    TextView countdownTextView;
 
-    CymbergajSurfaceView2 pitch;
+    CymbergajSurfaceView2 surfaceView;
     private CymbergajSurfaceView2.CymbergajThread gameThread;
-    private BallEngine ballEngine;
-    private PlayerEngine player2Engine;
-    private PlayerEngine player1Engine;
-    private List<BasePitchWall> pitchWalls;
-    private Dialog dialog;
+    private boolean countdownRunning;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        // tell system to use the layout defined in our XML file
         setContentView(R.layout.activity_main);
 
-        // get handles to the LunarView from XML, and its LunarThread
-        pitch = (CymbergajSurfaceView2) findViewById(R.id.pitch);
-        gameThread = pitch.getThread();
+        overlayView = (RelativeLayout) findViewById(R.id.overlay);
+        messageTextView = (TextView) findViewById(R.id.text);
+        countdownTextView = (TextView) findViewById(R.id.countdownHolder);
+        surfaceView = (CymbergajSurfaceView2) findViewById(R.id.pitch);
+        surfaceView.setRefree(this);
+        gameThread = surfaceView.getThread();
 
-        // give the LunarView a handle to the TextView used for messages
-        pitch.setTextView((TextView) findViewById(R.id.statusText));
+        overlayView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (gameThread.isGameInStateReady() && !countdownRunning) {
+                    countdownRunning = true;
+                    new Thread(new CountdownRunnable(new CountdownRunnable.ICountdownNotifier() {
+                        @Override
+                        public void notifyCountdown(final int step) {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    if (step != 0) {
+                                        showCountdown("Game will start in", "" + step);
+                                    } else {
+                                        hideMessageBox();
+                                        gameThread.doStart();
+                                        countdownRunning = false;
+                                    }
+                                }
+                            });
+                        }
+                    })).start();
+                }
+            }
+        });
     }
 
     @Override
     protected void onPause() {
-        pitch.getThread().pause(); // pause game when Activity pauses
+        surfaceView.getThread().pause(); // pause game when Activity pauses
         super.onPause();
+    }
+
+    @Override
+    public void showMessage(String message) {
+        messageTextView.setText(message);
+        messageTextView.setVisibility(View.VISIBLE);
+        countdownTextView.setVisibility(View.GONE);
+        overlayView.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void showCountdown(String step) {
+        countdownTextView.setText(step);
+        messageTextView.setVisibility(View.GONE);
+        countdownTextView.setVisibility(View.VISIBLE);
+        overlayView.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void showCountdown(String message, String step) {
+        messageTextView.setText(message);
+        countdownTextView.setText(step);
+        messageTextView.setVisibility(View.VISIBLE);
+        countdownTextView.setVisibility(View.VISIBLE);
+        overlayView.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void hideMessageBox() {
+        overlayView.setVisibility(View.INVISIBLE);
+    }
+
+    @Override
+    public void notifyPlayer1Scored() {
+        if (!countdownRunning) {
+            countdownRunning = true;
+            new Thread(new CountdownRunnable(new CountdownRunnable.ICountdownNotifier() {
+                @Override
+                public void notifyCountdown(final int step) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (step != 0) {
+                                showCountdown("Player1 scored a goal!", "" + step);
+                            } else {
+                                hideMessageBox();
+                                gameThread.doStart();
+                                countdownRunning = false;
+                            }
+                        }
+                    });
+                }
+            })).start();
+        }
+    }
+
+    @Override
+    public void notifyPlayer2Scored() {
+        if (!countdownRunning) {
+            countdownRunning = true;
+            new Thread(new CountdownRunnable(new CountdownRunnable.ICountdownNotifier() {
+                @Override
+                public void notifyCountdown(final int step) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (step != 0) {
+                                showCountdown("Player2 scored a goal!", "" + step);
+                            } else {
+                                hideMessageBox();
+                                gameThread.doStart();
+                                countdownRunning = false;
+                            }
+                        }
+                    });
+                }
+            })).start();
+        }
     }
 /*
     @Override
@@ -55,27 +152,27 @@ public class MainActivity extends ActionBarActivity {//implements ICymbergajRefr
         ballEngine = new BallEngine(this);
         player1Engine = new PlayerEngine(this);
         player2Engine = new PlayerEngine(this);
-        pitch = (FingerTrackingView) findViewById(R.id.pitch);
-        pitch.postDelayed(new Runnable() {
+        surfaceView = (FingerTrackingView) findViewById(R.id.surfaceView);
+        surfaceView.postDelayed(new Runnable() {
             @Override
             public void run() {
-                ballEngine.addColissionable(pitch);
+                ballEngine.addColissionable(surfaceView);
                 ballEngine.addColissionable(player1Engine);
                 ballEngine.addColissionable(player2Engine);
                 ballEngine.addColissionables(pitchWalls);
             }
         }, 200);
-        pitch.post(new Runnable() {
+        surfaceView.post(new Runnable() {
             @Override
             public void run() {
                 startGameWithDelay();
             }
         });
-        pitch.setRefree(this);
-        pitch.setBallEngine(ballEngine);
-        pitch.setPlayer1Engine(player1Engine);
-        pitch.setPlayer2Engine(player2Engine);
-        pitch.setPitchWalls(pitchWalls);
+        surfaceView.setRefree(this);
+        surfaceView.setBallEngine(ballEngine);
+        surfaceView.setPlayer1Engine(player1Engine);
+        surfaceView.setPlayer2Engine(player2Engine);
+        surfaceView.setPitchWalls(pitchWalls);
     }
 
     private void startRefreshingThread() {
@@ -88,7 +185,7 @@ public class MainActivity extends ActionBarActivity {//implements ICymbergajRefr
                         ballEngine.updatePosition();
                         ballEngine.considerFriction();
                         ballEngine.checkForCollisions();
-                        pitch.postInvalidate();
+                        surfaceView.postInvalidate();
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                         break;
@@ -133,7 +230,7 @@ public class MainActivity extends ActionBarActivity {//implements ICymbergajRefr
             public void run() {
                 refreshingThread.interrupt();
                 getSupportActionBar().setTitle("GOOL PLAYER 1");
-                pitch.setDefaultPositions();
+                surfaceView.setDefaultPositions();
                 ballEngine.setDefaultSpeed();
                 startGameWithDelay();
             }
@@ -147,7 +244,7 @@ public class MainActivity extends ActionBarActivity {//implements ICymbergajRefr
             public void run() {
                 refreshingThread.interrupt();
                 getSupportActionBar().setTitle("GOOL PLAYER 2");
-                pitch.setDefaultPositions();
+                surfaceView.setDefaultPositions();
                 ballEngine.setDefaultSpeed();
                 startGameWithDelay();
             }

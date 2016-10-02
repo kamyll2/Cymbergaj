@@ -11,7 +11,6 @@ import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
-import android.widget.TextView;
 
 import com.wygralak.cymbergaj.ColissionUtils.ICollisionInterpreter;
 import com.wygralak.cymbergaj.ColissionUtils.ICollisionInvoker;
@@ -38,11 +37,11 @@ public class CymbergajSurfaceView2 extends SurfaceView implements SurfaceHolder.
         /*
          * State-tracking constants
          */
-        public static final int STATE_LOSE = 1;
         public static final int STATE_PAUSE = 2;
         public static final int STATE_READY = 3;
         public static final int STATE_RUNNING = 4;
-        public static final int STATE_WIN = 5;
+        public static final int STATE_P1_SCORED = 5;
+        public static final int STATE_P2_SCORED = 6;
 
         /*
          * Member (state) fields
@@ -132,19 +131,22 @@ public class CymbergajSurfaceView2 extends SurfaceView implements SurfaceHolder.
             pitchWalls.add(new EastDownPitchWall());
         }
 
+        public boolean isGameInStateReady() {
+            return mMode == STATE_READY;
+        }
+
         @Override
         public boolean checkForCollisionAndHandle(ICollisionInvoker invoker, Vector2 currentVector, float x, float y) {
-            //TODO NOTIFY PLAYER SCORED!
             if (x - BallEngine.BALL_RADIUS > mCanvasWidth) {
-                //((MainActivity) getContext()).setStatusText("GOOL LEFT");
-                invoker.updatePositionDirectly(mCanvasWidth / 2f, mCanvasHeight / 2f);
-                //refree.notifyPlayer2Scored();
-                //return true;
+                setState(STATE_P2_SCORED);
+                setDefaultPositions();
+                ballEngine.setDefaultSpeed();
+                mRefree.notifyPlayer2Scored();
             } else if (x + BallEngine.BALL_RADIUS < 0) {
-                //((MainActivity) getContext()).setStatusText("GOOL RIGHT");
-                invoker.updatePositionDirectly(mCanvasWidth / 2f, mCanvasHeight / 2f);
-                //refree.notifyPlayer1Scored();
-                //return true;
+                setState(STATE_P1_SCORED);
+                setDefaultPositions();
+                ballEngine.setDefaultSpeed();
+                mRefree.notifyPlayer1Scored();
             }
             return false;
         }
@@ -320,21 +322,23 @@ public class CymbergajSurfaceView2 extends SurfaceView implements SurfaceHolder.
                 mCanvasHeight = height;
 
                 center_line = (float) mCanvasWidth / 2f;
-
-                float player1_x = (float) mCanvasWidth - PlayerEngine.PLAYER_RADIUS - 10f;
-                float player1_y = (float) mCanvasHeight / 2f;
-                player1Engine.setPitchSize(mCanvasWidth, mCanvasHeight);
-                player1Engine.updatePosition(player1_x, player1_y);
-
-                float player2_x = PlayerEngine.PLAYER_RADIUS + 10f;
-                float player2_y = (float) mCanvasHeight / 2f;
-                player2Engine.setPitchSize(mCanvasWidth, mCanvasHeight);
-                player2Engine.updatePosition(player2_x, player2_y);
-
-                ballEngine.setupDefaultPosition(mCanvasWidth, mCanvasHeight);
-
+                setDefaultPositions();
                 updatePitchWallSizes(mCanvasWidth, mCanvasHeight);
             }
+        }
+
+        private void setDefaultPositions() {
+            float player1_x = (float) mCanvasWidth - PlayerEngine.PLAYER_RADIUS - 10f;
+            float player1_y = (float) mCanvasHeight / 2f;
+            player1Engine.setPitchSize(mCanvasWidth, mCanvasHeight);
+            player1Engine.updatePosition(player1_x, player1_y);
+
+            float player2_x = PlayerEngine.PLAYER_RADIUS + 10f;
+            float player2_y = (float) mCanvasHeight / 2f;
+            player2Engine.setPitchSize(mCanvasWidth, mCanvasHeight);
+            player2Engine.updatePosition(player2_x, player2_y);
+
+            ballEngine.setupDefaultPosition(mCanvasWidth, mCanvasHeight);
         }
 
         private void updatePitchWallSizes(int pitchWidth, int pitchHeight) {
@@ -496,14 +500,11 @@ public class CymbergajSurfaceView2 extends SurfaceView implements SurfaceHolder.
     private Context mContext;
 
     /**
-     * Pointer to the text view to display "Paused.." etc.
-     */
-    private TextView mStatusText;
-
-    /**
      * The thread that actually draws the animation
      */
     private CymbergajThread thread;
+
+    private ICymbergajRefree mRefree;
 
     public CymbergajSurfaceView2(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -516,8 +517,9 @@ public class CymbergajSurfaceView2 extends SurfaceView implements SurfaceHolder.
         thread = new CymbergajThread(holder, context, new Handler() {
             @Override
             public void handleMessage(Message m) {
-                mStatusText.setVisibility(m.getData().getInt("viz"));
-                mStatusText.setText(m.getData().getString("text"));
+
+                //mStatusText.setVisibility(m.getData().getInt("viz"));
+                //mStatusText.setText(m.getData().getString("text"));
             }
         });
 
@@ -531,6 +533,10 @@ public class CymbergajSurfaceView2 extends SurfaceView implements SurfaceHolder.
      */
     public CymbergajThread getThread() {
         return thread;
+    }
+
+    public void setRefree(ICymbergajRefree refree) {
+        this.mRefree = refree;
     }
 
     @Override
@@ -547,18 +553,11 @@ public class CymbergajSurfaceView2 extends SurfaceView implements SurfaceHolder.
         if (!hasWindowFocus) thread.pause();
     }
 
-    /**
-     * Installs a pointer to the text view used for messages.
-     */
-    public void setTextView(TextView textView) {
-        mStatusText = textView;
-    }
 
     /* Callback invoked when the surface dimensions change. */
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
         thread.setSurfaceSize(width, height);
-        thread.setState(CymbergajThread.STATE_RUNNING);
-        thread.doStart();
+        thread.setState(CymbergajThread.STATE_READY);
     }
 
     /*

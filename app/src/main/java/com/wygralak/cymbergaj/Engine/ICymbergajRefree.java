@@ -6,6 +6,4 @@ package com.wygralak.cymbergaj.Engine;
 public interface ICymbergajRefree {
     void notifyPlayer1Scored();
     void notifyPlayer2Scored();
-
-    void notifyCountdown(int i);
 }

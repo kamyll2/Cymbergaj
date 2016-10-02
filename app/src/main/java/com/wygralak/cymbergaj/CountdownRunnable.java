@@ -1,28 +1,30 @@
 package com.wygralak.cymbergaj;
 
-import com.wygralak.cymbergaj.Engine.ICymbergajRefree;
-
 /**
  * Created by Kamil on 2016-04-17.
  */
 public class CountdownRunnable implements Runnable {
 
-    private ICymbergajRefree refree;
+    private ICountdownNotifier notifier;
 
-    public CountdownRunnable(ICymbergajRefree refree) {
-        this.refree = refree;
+    public CountdownRunnable(ICountdownNotifier notifier) {
+        this.notifier = notifier;
     }
 
     @Override
     public void run() {
         for (int i = 3; i >= 0; i--) {
-            refree.notifyCountdown(i);
+            notifier.notifyCountdown(i);
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
-                refree.notifyCountdown(0);
+                notifier.notifyCountdown(0);
             }
         }
+    }
+
+    public interface ICountdownNotifier{
+        void notifyCountdown(int step);
     }
 }
