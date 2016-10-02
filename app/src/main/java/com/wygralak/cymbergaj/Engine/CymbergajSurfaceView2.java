@@ -332,11 +332,13 @@ public class CymbergajSurfaceView2 extends SurfaceView implements SurfaceHolder.
             float player1_y = (float) mCanvasHeight / 2f;
             player1Engine.setPitchSize(mCanvasWidth, mCanvasHeight);
             player1Engine.updatePosition(player1_x, player1_y);
+            player1Engine.invalidateSpeedRatio();
 
             float player2_x = PlayerEngine.PLAYER_RADIUS + 10f;
             float player2_y = (float) mCanvasHeight / 2f;
             player2Engine.setPitchSize(mCanvasWidth, mCanvasHeight);
             player2Engine.updatePosition(player2_x, player2_y);
+            player2Engine.invalidateSpeedRatio();
 
             ballEngine.setupDefaultPosition(mCanvasWidth, mCanvasHeight);
         }
