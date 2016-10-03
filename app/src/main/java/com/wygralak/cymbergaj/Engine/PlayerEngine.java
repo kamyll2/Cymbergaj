@@ -40,7 +40,7 @@ public class PlayerEngine implements ICollisionInterpreter {
         }
     }
 
-    public void invalidateSpeedRatio(){
+    public void invalidateSpeedRatio() {
         speedRatio = 0.8f;
     }
 
@@ -67,6 +67,10 @@ public class PlayerEngine implements ICollisionInterpreter {
             float collisionPointX = ((x * PLAYER_RADIUS) + (currentX * BallEngine.BALL_RADIUS)) / (BallEngine.BALL_RADIUS + PLAYER_RADIUS);
             float collisionPointY = ((y * PLAYER_RADIUS) + (currentY * BallEngine.BALL_RADIUS)) / (BallEngine.BALL_RADIUS + PLAYER_RADIUS);
             Vector2 collisionVector = Vector2.createVector2FromTwoPoints(collisionPointX, collisionPointY, x, y).normalize();
+            float scaler = (1f / Math.max(Math.abs(collisionVector.x), Math.abs(collisionVector.y))) * 1.1f;
+            collisionVector.x *= scaler;
+            collisionVector.y *= scaler;
+
             invoker.updateVector(currentVector.add(collisionVector).normalize());
 
             float currX;
