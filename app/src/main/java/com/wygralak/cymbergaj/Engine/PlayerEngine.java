@@ -20,15 +20,41 @@ public class PlayerEngine implements ICollisionInterpreter {
     private float currentX;
     private float currentY;
     private float speedRatio = -1f;
+    private float minX = 0;
+    private float maxX = Float.MAX_VALUE;
+    private float minY = 0;
+    private float maxY = Float.MAX_VALUE;
 
     public PlayerEngine() {
         PLAYER_PAINT.setColor(Color.RED);
     }
 
     public void updatePosition(float x, float y) {
-        updateCurrentSpeedRatio(currentX, currentY, x, y);
-        currentX = x;
-        currentY = y;
+        float rX = validateXRestriction(x);
+        float rY = validateYRestriction(y);
+        updateCurrentSpeedRatio(currentX, currentY, rX, rY);
+        currentX = rX;
+        currentY = rY;
+    }
+
+    private float validateXRestriction(float x) {
+        if (x < minX) {
+            return minX;
+        } else if (x > maxX) {
+            return maxX;
+        } else {
+            return x;
+        }
+    }
+
+    private float validateYRestriction(float y) {
+        if (y < minY) {
+            return minY;
+        } else if (y > maxY) {
+            return maxY;
+        } else {
+            return y;
+        }
     }
 
     private void updateCurrentSpeedRatio(float x1, float y1, float x2, float y2) {
@@ -104,5 +130,12 @@ public class PlayerEngine implements ICollisionInterpreter {
         //ratio=0.7 => minSpeed=0
         //ratio=3.0 => minSpeed=35
         return 15.2173f * speedRatio - 10.6521f;
+    }
+
+    public void setPositionRestrictions(float minX, float maxX, float minY, float maxY) {
+        this.minX = minX;
+        this.maxX = maxX;
+        this.minY = minY;
+        this.maxY = maxY;
     }
 }
